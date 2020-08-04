@@ -14,8 +14,8 @@ class ElementWrapper {
 }
 
 class TextWrapper {
-  constructor(type) {
-    this.root = document.createTextNode(type);
+  constructor(text) {
+    this.root = document.createTextNode(text);
   }
   mountTo(parent) {
     parent.appendChild(this.root);
@@ -25,21 +25,28 @@ class TextWrapper {
 export class Component {
   constructor() {
     this.children = [];
+    this.attributes = {};
   }
   setAttribute(name, value) {
-    this[name] = value;
-  }
-  mountTo(parent) {
-    let vDom = this.render();
-    vDom.mountTo(parent);
+    this.attributes[name] = value;
   }
   appendChild(vChild) {
     this.children.push(vChild);
   }
+  mountTo(parent) {
+    let vDom = this.render();
+    this.children.forEach(child => {
+      vDom.appendChild(child);
+    })
+    for (let name in this.attributes) {
+      vDom.setAttribute(name, this.attributes[name]);
+    }
+    vDom.mountTo(parent);
+  }
 }
 
-export let ToyReact = {
-  createElement(type, attributes, ...children) {
+const ToyReact = {
+  createElement: (type, attributes, ...children) => {
     let element;
     if (typeof type === 'string') {
       element = new ElementWrapper(type);
@@ -49,27 +56,17 @@ export let ToyReact = {
     for (let name in attributes) {
       element.setAttribute(name, attributes[name]);
     }
-    let insertChildren = (children) => {
-      for (let child of children) {
-        if (typeof child === "object" && child instanceof Array) {
-          insertChildren(child);
-        } else {
-          if (!(child instanceof Component) &&
-            !(child instanceof ElementWrapper) &&
-            !(child instanceof TextWrapper)) {
-            child = String(child);
-          }
-          if (typeof child === 'string') {
-            child = new TextWrapper(child);
-          }
-          element.appendChild(child);
-        }
+    [...children].forEach(child => {
+      if (typeof child === 'string') {
+        child = new TextWrapper(child);
       }
-    }
-    insertChildren(children);
+      element.appendChild(child);
+    });
     return element;
   },
-  render(vDom, element) {
+  render: (vDom, element) => {
     vDom.mountTo(element);
   }
 }
+
+export default ToyReact
