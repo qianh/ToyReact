@@ -1,28 +1,39 @@
 // import { ToyReact, Component } from './ToyReact.js';
 import ToyReact, { Component } from './_ToyReact.js';
 
-class MyComponent extends Component {
+class Square extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: null
+    }
+  }
   render() {
-    return <div>
-      <span>Hello </span>
-      <span>World !</span>
-    </div>
+    return (
+      <button className="square" onClick={() => this.setState({ value: 'X'})}>
+        {this.state.value}
+      </button>
+    )
   }
 }
 
-class User extends Component {
+class Board extends Component {
+  renderSquare(i) {
+    return <Square value={i}/>
+  }
   render() {
     return (
-      <div id="user">
-        <div>123</div>
-        <div>木头人</div>
+      <div>
+        {[[1,2,3], [4,5,6], [7,8,9]].map(row => <div className="board-row">
+          {row.map(item => {
+            return this.renderSquare(item)
+          })}
+        </div>)}
       </div>
     )
   }
 }
 
-const myComponent = <MyComponent name="a" id="myComponent">
-  <User />
-</MyComponent>;
+const myComponent = <Board id="board"></Board>;
 
 ToyReact.render(myComponent, document.getElementById('app'));
