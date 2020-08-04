@@ -4,15 +4,14 @@ class MyComponent extends Component {
   render() {
     return <div>
       <span>Hello </span>
-      <span>World </span>
-      <div>true</div>
+      <span>World !</span>
     </div>
   }
 }
 
-let a = <MyComponent name="a">
+const myComponent = <MyComponent name="a">
   <div>123</div>
   <div>木头人</div>
 </MyComponent>;
 
-ToyReact.render(a, document.body);
+ToyReact.render(myComponent, document.getElementById('app'));
